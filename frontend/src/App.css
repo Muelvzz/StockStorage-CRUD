@@ -1,0 +1,69 @@
+#web-title {
+    font-family: "Rubik Mono One";
+    color: white;
+}
+
+nav {
+    display: flex;
+    background-color: #5e3023;
+    justify-content: space-between;
+    padding: 1rem;
+    align-items: center;
+}
+
+#menu-btn {
+    border-radius: 10px;
+    width: 2.25rem;
+    height: 2.25rem;
+    cursor: pointer;
+    background-color: #5e3023;
+    border-style: none;
+}
+
+#menu-btn:hover {
+    background-color: black;
+    transition: 0.3s;
+}
+
+#menu-btn > img {
+    width: 2rem;
+    height: 2rem;
+}
+
+#menu-modal-overlay {
+    position: absolute;
+    top: 1;
+    right: 0;
+    display: flex;
+    align-items: center;
+    margin-right: 0.8rem;
+}
+
+#menu-modal-content {
+    background: #895737;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-modal-btn {
+    display: flex;
+    border-style: none;
+    background-color: #895737;
+    font-weight: bold;
+    font-size: large;
+    text-align: left;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0.2rem 0;
+    cursor: pointer;
+    color: white;
+    padding: 0.25rem;
+}
+
+.menu-modal-btn:hover {
+    background-color: rgba(0, 0, 0, 0.361);
+    transition: 0.3s;
+    border-radius: 10px;
+}

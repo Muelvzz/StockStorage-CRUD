@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Monda:wght@400..700&family=Rubik+Mono+One&display=swap');
+
+html, * {
+    padding: 0;
+    margin: 0;
+    font-family: "Monda";
+}
+
+html {
+    background-color: #f3e9dc;
+}
