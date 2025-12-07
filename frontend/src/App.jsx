@@ -88,6 +88,12 @@ function App() {
 
       </div>
 
+      <div id="dashboard">
+        <div id="dashboard-content">
+          <h1>Hello</h1>
+        </div>
+      </div>
+
     </>
   )
 }

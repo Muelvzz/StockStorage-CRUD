@@ -83,3 +83,12 @@ nav {
     align-items: center;
     gap: 1rem;
 }
+
+#dashboard {
+    background-color: white;
+    width: 100%;
+}
+
+#dashboard-content {
+    padding: 1rem;
+}
