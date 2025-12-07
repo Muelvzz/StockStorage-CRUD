@@ -10,12 +10,24 @@ function App() {
   const [editInventory, setEditInventory] = useState(false)
   const [deleteInventory, setDeleteInventory] = useState(false)
 
+  const [searchInput, setSearchInput] = useState("")
+
   // useEffect(() {
 
   // }, [refresh])
 
+  const selectionList = ["Hello", "Hi!", "Nice to meet"]
+
+  const handleSearchInput = (e) => {
+    e.preventDefault
+    setSearchInput(e.target.value)
+    console.log(searchInput)
+  }
+
   return (
     <>
+
+      {/* NAVIGATION BAR */}
       <nav>
         <div>
           <h1 id='web-title'>Stockstorage</h1>
@@ -30,6 +42,7 @@ function App() {
         </div>
       </nav>
 
+      {/* MENU MODAL */}
       { showMenu && (
         <>
           <div id="menu-modal-overlay">
@@ -50,6 +63,30 @@ function App() {
           </div>
         </>
       ) }
+
+      {/* SEARCH BAR */}
+      <div id="search-bar">
+        <div id="search-bar-content">
+
+          <div id="search-bar-input">
+            <input 
+              type="text" 
+              placeholder='Enter name or category'
+              onChange={handleSearchInput}
+            />
+          </div>
+
+          <div id="search-bar-filter">
+            <select name="category">
+              <option value="">Filter by...</option>
+              { selectionList.map((option, index) => (
+                <option value={option} key={index}>{ option }</option>
+              )) }
+            </select>
+          </div>
+        </div>
+
+      </div>
 
     </>
   )

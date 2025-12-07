@@ -9,3 +9,33 @@ html, * {
 html {
     background-color: #f3e9dc;
 }
+
+input, select {
+    width: 100%;
+    border-style: none;
+    cursor: pointer;
+}
+
+input {
+    padding-left: 1rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+input:hover {
+    background-color: rgba(128, 128, 128, 0.452);
+    transition: 0.3s;
+    color: black;
+    border-radius: 10px;
+}
+
+select {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+select:hover {
+    background-color: rgba(128, 128, 128, 0.452);
+    transition: 0.3s;
+    border-radius: 10px;
+}
