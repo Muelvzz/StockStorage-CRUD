@@ -20,5 +20,6 @@ class Inventories(Base):
     name = Column(String, nullable=False)
     stock = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
+    image_url = Column(String, nullable=False)
 
     category = relationship("Category", back_populates="items")

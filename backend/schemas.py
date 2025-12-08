@@ -6,6 +6,7 @@ class InventoryCreate(BaseModel):
     name: str
     stock: int
     notes: str | None = None
+    image_url: str
 
 
 class CategoryInventoryCreate(BaseModel):
@@ -21,6 +22,7 @@ class InventoryOut(BaseModel):
     name: str
     stock: int
     notes: str | None = None
+    image_url: str
 
     class Config:
         orm_mode = True
