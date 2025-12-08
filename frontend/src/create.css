@@ -5,11 +5,23 @@
     border-radius: 10px;
 }
 
+#main-create-header {
+    width: 100%;
+    text-align: center;
+}
+
 #main-create-content {
     padding: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
+}
+
+#category-btn {
+    width: 50%;
+    margin: 1rem auto;
+    background-color: rgba(128, 128, 128, 0.291);
+    border-radius: 10px;
 }
 
 #add-card-overlay {
@@ -29,4 +41,52 @@
     width: 100%;
     height: 100%;
     align-items: center;
+}
+
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blue(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#modal-content {
+    background: white;
+    padding: 1.5rem;
+    max-width: 600px;
+    width: 90%;
+    z-index: 9999;
+}
+
+#modal-header, #modal-input {
+    display: flex;
+    margin: 1rem 0;
+}
+
+#modal-header {
+    align-items: center;
+    justify-content: space-between;
+}
+
+#cancel-btn, #add-btn {
+    border-style: none;
+    padding: 0.4rem 1rem;
+    border-radius: 3px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#cancel-btn {
+    background-color: red;
+}
+
+#add-btn {
+    background-color: green;
 }
