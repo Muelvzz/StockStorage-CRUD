@@ -3,8 +3,6 @@ from backend import inventory
 from backend.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
-import uvicorn
-
 app = FastAPI()
 
 app.add_middleware(

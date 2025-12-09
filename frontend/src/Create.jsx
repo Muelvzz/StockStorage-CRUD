@@ -3,16 +3,31 @@ import "./dashboard.css"
 
 import { useState, useRef } from "react"
 import { Link } from "react-router-dom"
+import api from "./api"
+
+// SAMPLE API TESTING
+// {   
+//     "category": "dailybugle",  
+//     "inventories": 
+//         [     {       
+//             "name": "hello",       
+//             "stock": 100,       
+//             "notes": "this is a note"     
+//         },     {       
+//             "name": "item 2",       
+//             "stock": 50,       
+//             "notes": "another note"     
+//         }   ] 
+// }
 
 export default function Create() {
 
     const [toggleCreate, setToggleCreate] = useState(false)
 
     const [category, setCategory] = useState("")
-    const [name, setName] = useState("")
-    const [stock, setStock] = useState(0)
-    const [image, setImage] = useState("")
-    const [notes, setNotes] = useState("")
+    const [images, setImages] = useState([])
+
+    const [inventories, setInventories] = useState([])
 
     const fileRef = useRef()
 
@@ -20,35 +35,40 @@ export default function Create() {
         setCategory(e.target.value)
     }
 
-    const handleName = (e) => {
-        setName(e.target.value)
-    }
-
-    const handleStock = (e) => {
-        setStock(e.target.value)
-    }
-
-    const handleImage = (e) => {
-        setImage(e.target.files[0])
-    }
-
-    const handleNotes = (e) => {
-        setNotes(e.target.value)
-    }
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (category !== "") {
-            setName("")
-            setStock(0)
-            setImage("")
-            setNotes("")
+        if (!category) {
+            window.alert("Please fill the category above first")
+            return
+        }
 
+        const inventoryData = {
+            category: category,
+            inventories: inventories
+        }
+
+        const formData = new FormData()
+
+        formData.append("category", category)
+        formData.append("inventories_json", JSON.stringify(inventoryData))
+
+        images.forEach((img) => {
+            formData.append("images", img)
+        })
+
+        try {
+            const res = await api.post("/inventory/create", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+
+            console.log("SUCCESS:", res.data)
             setToggleCreate(false)
-        } else {
-            setToggleCreate(false)
-            window.alert("please fill the category above first")
+        } catch (err) {
+            console.error("UPLOAD ERROR:", err)
+            window.alert("Error uploading inventory")
         }
     }
 
@@ -75,6 +95,7 @@ export default function Create() {
 
                 <div id="main-create-header">
                     <input 
+                        name="category"
                         type="text" 
                         placeholder="Enter the Category Name"
                         id="category-btn"
@@ -85,7 +106,15 @@ export default function Create() {
 
                 <div id="main-create-content">
 
-                    <button id="add-card-overlay" onClick={() => setToggleCreate(true)}>
+                    <button id="add-card-overlay" onClick={() => {
+                        setToggleCreate(true),
+                        setInventories(prev => [...prev, {
+                            name: "",
+                            stock: 0,
+                            notes: ""
+                        }]),
+                        setImages(prev => [...prev, ""])
+                        }}>
                         <h1>Add +</h1>
                     </button>
 
@@ -106,42 +135,66 @@ export default function Create() {
                                 <div id="modal-input">
                                     <h3>Name:</h3>
                                     <input 
+                                        name="name"
                                         type="text"
                                         placeholder="Enter the Inventory Name"
-                                        value={name}
-                                        onChange={handleName}
+                                        onChange={(e) => {
+                                            setInventories(prev => {
+                                                const updated = [...prev];
+                                                updated[updated.length - 1].name = e.target.value
+                                                return updated
+                                            })
+                                        }}
                                         required
                                     />
                                 </div>
                                 <div id="modal-input">
                                     <h3>Stock:</h3>
                                     <input 
+                                        name="stock"
                                         type="number"
                                         placeholder="Enter the number of stocks"
-                                        value={stock}
-                                        onChange={handleStock}
+                                        onChange={(e) => {
+                                            setInventories(prev => {
+                                                const updated = [...prev];
+                                                updated[updated.length - 1].stock = parseInt(e.target.value)
+                                                return updated
+                                            })
+                                        }}
                                         required
                                     />
                                 </div>
                                 <div id="modal-input">
                                     <h3>Image:</h3>
                                     <input 
+                                        name="images"
                                         type="file"
                                         ref={fileRef}
-                                        onChange={handleImage}
+                                        onChange={(e) => {
+                                            setImages(prev => {
+                                                const updated = [...prev];
+                                                updated[updated.length - 1] = e.target.files[0];
+                                                return updated;
+                                            });
+                                        }}
                                         required
                                     />
                                 </div>
                                 <textarea
+                                    name="notes"
                                     rows={5}
                                     placeholder="Enter your notes (Optional)"
-                                    value={notes}
-                                    onChange={handleNotes}
+                                        onChange={(e) => {
+                                            setInventories(prev => {
+                                                const updated = [...prev];
+                                                updated[updated.length - 1].notes = e.target.value
+                                                return updated
+                                            })
+                                        }}
                                 ></textarea>
 
                                 <button 
                                     id="add-btn" 
-                                    onClick={() => {handleSubmit}}
                                 >Add</button>
                             </form>
 

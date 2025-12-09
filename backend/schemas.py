@@ -1,12 +1,11 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 # Request Model
 class InventoryCreate(BaseModel):
     name: str
     stock: int
-    notes: str | None = None
-    image_url: str
+    notes: Optional[str] = None
 
 
 class CategoryInventoryCreate(BaseModel):
@@ -21,7 +20,7 @@ class InventoryOut(BaseModel):
 
     name: str
     stock: int
-    notes: str | None = None
+    notes: Optional[str] = None
     image_url: str
 
     class Config:
