@@ -9,40 +9,45 @@ import api from "./api"
 // {   
 //     "category": "dailybugle",  
 //     "inventories": 
-//         [     {       
+//         [{       
 //             "name": "hello",       
 //             "stock": 100,       
 //             "notes": "this is a note"     
-//         },     {       
+//         },{       
 //             "name": "item 2",       
 //             "stock": 50,       
 //             "notes": "another note"     
-//         }   ] 
+//         }] 
 // }
 
 export default function Create() {
 
+    // States and other essential components to be used
     const [toggleCreate, setToggleCreate] = useState(false)
 
-    const [category, setCategory] = useState("")
-    const [images, setImages] = useState([])
+    const [category, setCategory] = useState("") // responsible for all the category to be handled
+    const [images, setImages] = useState([]) // responsible for all the images to be handled
 
-    const [inventories, setInventories] = useState([])
+    const [inventories, setInventories] = useState([]) // responsible for the inventories to be handled
 
     const fileRef = useRef()
 
+    // handleCategory: updates the category state from text input
     const handleCategory = (e) => {
         setCategory(e.target.value)
     }
 
+    // handleSubmit: gather form data, validate, and send to backend
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        // This checks if the input in the category is being filled
         if (!category) {
             window.alert("Please fill the category above first")
             return
         }
 
+        // This creates the api format which will be sent to the backend
         const inventoryData = {
             category: category,
             inventories: inventories
@@ -53,6 +58,8 @@ export default function Create() {
         formData.append("category", category)
         formData.append("inventories_json", JSON.stringify(inventoryData))
 
+        // Append each selected file under the same field name 'images'
+        // The backend will map images by index to inventory items — ordering matters
         images.forEach((img) => {
             formData.append("images", img)
         })
@@ -107,13 +114,14 @@ export default function Create() {
                 <div id="main-create-content">
 
                     <button id="add-card-overlay" onClick={() => {
+                        // opening the modal and pre-populating arrays with a blank inventory slot
                         setToggleCreate(true),
                         setInventories(prev => [...prev, {
                             name: "",
                             stock: 0,
                             notes: ""
                         }]),
-                        setImages(prev => [...prev, ""])
+                        setImages(prev => [...prev, ""]) // placeholder for file corresponding to the new inventory
                         }}>
                         <h1>Add +</h1>
                     </button>
@@ -139,6 +147,7 @@ export default function Create() {
                                         type="text"
                                         placeholder="Enter the Inventory Name"
                                         onChange={(e) => {
+                                            // update the last pushed inventory object's name
                                             setInventories(prev => {
                                                 const updated = [...prev];
                                                 updated[updated.length - 1].name = e.target.value
@@ -155,6 +164,7 @@ export default function Create() {
                                         type="number"
                                         placeholder="Enter the number of stocks"
                                         onChange={(e) => {
+                                            // update the last pushed inventory object's stock (ensure integer)
                                             setInventories(prev => {
                                                 const updated = [...prev];
                                                 updated[updated.length - 1].stock = parseInt(e.target.value)
@@ -171,6 +181,7 @@ export default function Create() {
                                         type="file"
                                         ref={fileRef}
                                         onChange={(e) => {
+                                            // replace the placeholder at the same index with the selected File object
                                             setImages(prev => {
                                                 const updated = [...prev];
                                                 updated[updated.length - 1] = e.target.files[0];
@@ -185,6 +196,7 @@ export default function Create() {
                                     rows={5}
                                     placeholder="Enter your notes (Optional)"
                                         onChange={(e) => {
+                                            // update notes for the last pushed inventory
                                             setInventories(prev => {
                                                 const updated = [...prev];
                                                 updated[updated.length - 1].notes = e.target.value
