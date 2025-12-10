@@ -46,13 +46,15 @@ async def create_category_and_inventory(
             with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(image_file.file, buffer)
 
+            public_url = f"http://localhost:8000/image/{filename}"
+
             # This adds all the input in the inventories dict one by one into the database
             db_item = models.Inventories(
                 category_id=db_category.id,
                 name=inv.name,
                 stock=inv.stock,
                 notes=inv.notes,
-                image_url=file_path
+                image_url=public_url
             )
 
             db.add(db_item)
@@ -79,5 +81,40 @@ async def create_category_and_inventory(
             ]
         )
     
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/view", response_model=List[CategoryInventoryOut])
+def view_all(db: Session = Depends(get_db)):
+
+    try:
+        # Gathers all the data present in the database
+        categories = db.query(models.Category).all()
+
+        # This will be shown if there is no data entered in the database
+        if not categories:
+            raise HTTPException(status_code=404, detail="No categories found")
+
+        # Crucial for sending the api back into the frontend
+        return [
+            CategoryInventoryOut(
+                id=cat.id,
+                category=cat.category,
+                inventories=[
+                    InventoryOut(
+                        id=inv.id,
+                        category_id=inv.category_id,
+                        name=inv.name,
+                        stock=inv.stock,
+                        notes=inv.notes,
+                        image_url=inv.image_url
+                    )
+                    for inv in cat.items
+                ]
+            )
+            for cat in categories
+        ]
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

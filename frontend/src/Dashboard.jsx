@@ -3,7 +3,7 @@ import "./dashboard.css"
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 
-import Create from "./Create"
+import api from "./api"
 
 export default function Dashboard() {
   const [refresh, setRefresh] = useState(false)
@@ -14,10 +14,16 @@ export default function Dashboard() {
   const [deleteInventory, setDeleteInventory] = useState(false)
 
   const [searchInput, setSearchInput] = useState("")
+  const [inventories, setInventories] = useState([])
 
-  // useEffect(() {
+  async function loadInventories() {
+    const res = await api.get("/inventory/view")
+    setInventories(res.data)
+  }
 
-  // }, [refresh])
+  useEffect(() => {
+    loadInventories()
+  }, [refresh])
 
   const selectionList = ["Hello", "Hi!", "Nice to meet"]
 
@@ -107,7 +113,20 @@ export default function Dashboard() {
 
         <div id="dashboard">
             <div id="dashboard-content">
-                <h1>Hello</h1>
+                {inventories.map((category, index) => (
+                  <>
+                  <h1>{ category.category }</h1>
+                    {category.inventories.map((inv, index) => (
+                      <>
+                        <p>{ inv.name }</p>
+                        <p>{ inv.stock }</p>
+                        <p>{ inv.notes }</p>
+                        <p>{ inv.image_url }</p>
+                        <img src={`${inv.image_url}`} alt={ inv.image_url } />
+                      </>
+                    ))}
+                  </>
+                ))}
             </div>
         </div>
 
