@@ -1,3 +1,4 @@
+/* MAIN WRAPPER */
 #main-create-overlay {
     margin: 2rem;
     background-color: white;
@@ -5,18 +6,21 @@
     border-radius: 10px;
 }
 
+/* CATEGORY HEADER */
 #main-create-header {
     width: 100%;
     text-align: center;
 }
 
+/* GRID DISPLAY FOR CARDS */
 #main-create-content {
     padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
     gap: 1rem;
 }
 
+/* CATEGORY INPUT */
 #category-btn {
     width: 50%;
     margin: 1rem auto;
@@ -24,7 +28,9 @@
     border-radius: 10px;
 }
 
-#add-card-overlay {
+/* CARD AND ADD-CARD SHARED STYLES */
+#add-card-overlay,
+.card-content {
     width: 100%;
     height: 30vh;
     border: 5px dashed grey;
@@ -36,13 +42,31 @@
     text-decoration: underline;
 }
 
-#add-card-content {
+/* INSIDE CARD CONTENT */
+#add-card-content,
+.card-content {
     padding: 1rem;
     width: 100%;
     height: 100%;
+    display: flex;
     align-items: center;
 }
 
+/* SPECIFIC CARD CONTENT SIZE OVERRIDE */
+.card-content {
+    width: 400px;
+    height: 24vh;
+    gap: 1rem;
+}
+
+/* IMAGE PREVIEW */
+.card-left > img {
+    border-radius: 10px;
+    height: 100%;
+    width: 200px;
+}
+
+/* MODAL OVERLAY */
 #modal-overlay {
     position: fixed;
     top: 0;
@@ -50,12 +74,13 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blue(2px);
+    backdrop-filter: blur(2px); /* fixed typo */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* MODAL BOX */
 #modal-content {
     background: white;
     padding: 1.5rem;
@@ -64,18 +89,23 @@
     z-index: 9999;
 }
 
-#modal-header, #modal-input {
+/* HEADER + INPUT WRAPPERS */
+#modal-header,
+#modal-input {
     display: flex;
     margin: 1rem 0;
 }
 
+/* HEADER ALIGNMENT */
 #modal-header {
     align-items: center;
     justify-content: space-between;
 }
 
-#cancel-btn, #add-btn {
-    border-style: none;
+/* BUTTONS */
+#cancel-btn,
+#add-btn {
+    border: none;
     padding: 0.4rem 1rem;
     border-radius: 3px;
     color: white;
@@ -83,10 +113,12 @@
     cursor: pointer;
 }
 
+/* CANCEL BUTTON */
 #cancel-btn {
     background-color: red;
 }
 
+/* ADD/SUBMIT BUTTON */
 #add-btn {
     background-color: green;
 }

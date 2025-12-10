@@ -2,7 +2,7 @@ import "./create.css"
 import "./dashboard.css"
 
 import { useState, useRef } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import api from "./api"
 
 // SAMPLE API TESTING
@@ -19,69 +19,99 @@ import api from "./api"
 //             "notes": "another note"     
 //         }] 
 // }
-
 export default function Create() {
 
-    // States and other essential components to be used
+    // Main states
     const [toggleCreate, setToggleCreate] = useState(false)
+    const [category, setCategory] = useState("")
+    const [images, setImages] = useState([])
+    const [inventories, setInventories] = useState([])
 
-    const [category, setCategory] = useState("") // responsible for all the category to be handled
-    const [images, setImages] = useState([]) // responsible for all the images to be handled
+    // Modal states
+    const [name, setName] = useState("")
+    const [stock, setStock] = useState(0)
+    const [notes, setNotes] = useState("")
 
-    const [inventories, setInventories] = useState([]) // responsible for the inventories to be handled
+    const [image, setImage] = useState(null)
+    const [preview, setPreview] = useState([])
 
     const fileRef = useRef()
+    const navigate = useNavigate()
 
-    // handleCategory: updates the category state from text input
-    const handleCategory = (e) => {
-        setCategory(e.target.value)
+    // ===========================
+    // Universal Input Handlers
+    // ===========================
+    const handleCategory = (e) => setCategory(e.target.value)
+    const handleName = (e) => setName(e.target.value)
+    const handleStock = (e) => setStock(e.target.value)
+    const handleNotes = (e) => setNotes(e.target.value)
+
+    // ===========================
+    // Image Handler
+    // ===========================
+    const handleImage = (e) => {
+        const files = Array.from(e.target.files)
+        setImage(files[0])
+
+        const urls = files.map(f => URL.createObjectURL(f))
+        setPreview(prev => [...prev, ...urls])
     }
 
-    // handleSubmit: gather form data, validate, and send to backend
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+    // ===========================
+    // Submit category + inventories
+    // ===========================
+    const handleSubmit = async () => {
 
-        // This checks if the input in the category is being filled
         if (!category) {
             window.alert("Please fill the category above first")
             return
         }
 
-        // This creates the api format which will be sent to the backend
-        const inventoryData = {
-            category: category,
-            inventories: inventories
-        }
+        const inventoryData = { category, inventories }
 
         const formData = new FormData()
-
         formData.append("category", category)
         formData.append("inventories_json", JSON.stringify(inventoryData))
 
-        // Append each selected file under the same field name 'images'
-        // The backend will map images by index to inventory items — ordering matters
-        images.forEach((img) => {
-            formData.append("images", img)
-        })
+        images.forEach(img => formData.append("images", img))
 
         try {
-            const res = await api.post("/inventory/create", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+            await api.post("/inventory/create", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
             })
 
-            console.log("SUCCESS:", res.data)
-            setToggleCreate(false)
+            window.alert("Successfully saved!")
+            navigate("/")
         } catch (err) {
             console.error("UPLOAD ERROR:", err)
             window.alert("Error uploading inventory")
         }
     }
 
+    // ===========================
+    // Add Inventory Handler
+    // ===========================
+    const handleInventory = (e) => {
+        e.preventDefault()
+
+        // Add inventory object
+        setInventories(prev => [...prev, { name, stock, notes }])
+
+        // Attach image
+        setImages(prev => [...prev, image])
+
+        // Close modal
+        setToggleCreate(false)
+
+        // Reset fields
+        setName("")
+        setStock("")
+        setNotes("")
+        setImage(null)
+    }
+
     return (
         <>
-
             {/* NAVIGATION BAR */}
             <nav>
                 <div>
@@ -89,9 +119,7 @@ export default function Create() {
                 </div>
                 <div>
                     <Link to={"/"}>
-                        <button 
-                            id='menu-btn'
-                        >
+                        <button id='menu-btn'>
                             <img src="\arrow-back.png" alt="Arrow Back Icon" />
                         </button>
                     </Link>
@@ -100,6 +128,7 @@ export default function Create() {
 
             <main id="main-create-overlay">
 
+                {/* CATEGORY INPUT */}
                 <div id="main-create-header">
                     <input 
                         name="category"
@@ -113,110 +142,101 @@ export default function Create() {
 
                 <div id="main-create-content">
 
-                    <button id="add-card-overlay" onClick={() => {
-                        // opening the modal and pre-populating arrays with a blank inventory slot
-                        setToggleCreate(true),
-                        setInventories(prev => [...prev, {
-                            name: "",
-                            stock: 0,
-                            notes: ""
-                        }]),
-                        setImages(prev => [...prev, ""]) // placeholder for file corresponding to the new inventory
-                        }}>
+                    {/* INVENTORY LIST */}
+                    {inventories.length > 0 &&
+                        inventories.map((inv, index) => (
+                            <div key={index} className="card-content">
+                                <div className="card-left">
+                                    <img src={preview[index]} alt={inv.name} />
+                                </div>
+                                <div className="card-right">
+                                    <p>{inv.name}</p>
+                                    <p>{inv.stock}</p>
+                                    <p>{inv.notes}</p>
+                                </div>
+                            </div>
+                        ))
+                    }
+
+                    {/* OPEN MODAL BUTTON */}
+                    <button id="add-card-overlay" onClick={() => setToggleCreate(true)}>
                         <h1>Add +</h1>
                     </button>
 
                 </div>
 
-                { toggleCreate && (
-                    <div id="modal-overlay">
+                <button id="add-btn" onClick={handleSubmit}>
+                    Submit
+                </button>
 
+                {/* MODAL */}
+                {toggleCreate && (
+                    <div id="modal-overlay">
                         <div id="modal-content">
+
+                            {/* HEADER */}
                             <div id="modal-header">
                                 <h2>Add Inventory</h2>
-                                <button id="cancel-btn"  onClick={() => setToggleCreate(false)}>Cancel</button>
+                                <button id="cancel-btn" onClick={() => setToggleCreate(false)}>Cancel</button>
                             </div>
 
                             <hr />
 
-                            <form onSubmit={handleSubmit} id="modal-form">
+                            {/* MODAL FORM */}
+                            <form id="modal-form" onSubmit={handleInventory}>
+                                
                                 <div id="modal-input">
                                     <h3>Name:</h3>
                                     <input 
                                         name="name"
                                         type="text"
                                         placeholder="Enter the Inventory Name"
-                                        onChange={(e) => {
-                                            // update the last pushed inventory object's name
-                                            setInventories(prev => {
-                                                const updated = [...prev];
-                                                updated[updated.length - 1].name = e.target.value
-                                                return updated
-                                            })
-                                        }}
+                                        value={name}
+                                        onChange={handleName}
                                         required
                                     />
                                 </div>
+
                                 <div id="modal-input">
                                     <h3>Stock:</h3>
                                     <input 
                                         name="stock"
                                         type="number"
                                         placeholder="Enter the number of stocks"
-                                        onChange={(e) => {
-                                            // update the last pushed inventory object's stock (ensure integer)
-                                            setInventories(prev => {
-                                                const updated = [...prev];
-                                                updated[updated.length - 1].stock = parseInt(e.target.value)
-                                                return updated
-                                            })
-                                        }}
+                                        value={stock}
+                                        onChange={handleStock}
                                         required
                                     />
                                 </div>
+
                                 <div id="modal-input">
                                     <h3>Image:</h3>
                                     <input 
                                         name="images"
                                         type="file"
                                         ref={fileRef}
-                                        onChange={(e) => {
-                                            // replace the placeholder at the same index with the selected File object
-                                            setImages(prev => {
-                                                const updated = [...prev];
-                                                updated[updated.length - 1] = e.target.files[0];
-                                                return updated;
-                                            });
-                                        }}
+                                        onChange={handleImage}
                                         required
                                     />
                                 </div>
+
                                 <textarea
                                     name="notes"
                                     rows={5}
                                     placeholder="Enter your notes (Optional)"
-                                        onChange={(e) => {
-                                            // update notes for the last pushed inventory
-                                            setInventories(prev => {
-                                                const updated = [...prev];
-                                                updated[updated.length - 1].notes = e.target.value
-                                                return updated
-                                            })
-                                        }}
-                                ></textarea>
+                                    value={notes}
+                                    onChange={handleNotes}
+                                />
 
-                                <button 
-                                    id="add-btn" 
-                                >Add</button>
+                                <button id="add-btn">Add</button>
+
                             </form>
 
                         </div>
-
                     </div>
                 )}
 
             </main>
-
         </>
     )
 }
